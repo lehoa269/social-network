@@ -162,6 +162,9 @@ const HomeScreen = ({navigation}) => {
               <PostCard
                 item={item}
                 onDelete={handleDelete}
+                onComment={() =>
+                  navigation.navigate('Comment', {postId: item.id})
+                }
                 onPress={() =>
                   navigation.navigate('HomeProfile', {userId: item.userId})
                 }

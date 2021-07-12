@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-duplicate-props */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -14,7 +15,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
 import {View, Image, Text} from 'react-native';
 
-const PostCard = ({item, onDelete, onPress}) => {
+const PostCard = ({item, onDelete, onPress, onComment}) => {
   const {user, logout} = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
 
@@ -105,7 +106,7 @@ const PostCard = ({item, onDelete, onPress}) => {
             {likeText}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.Interaction}>
+        <TouchableOpacity style={styles.Interaction} onPress={onComment}>
           <Ionicons name="md-chatbubble-outline" size={25} />
           <Text style={styles.InteractionText}>{commentText}</Text>
         </TouchableOpacity>
