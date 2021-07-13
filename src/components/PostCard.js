@@ -1,8 +1,5 @@
-/* eslint-disable react/jsx-no-duplicate-props */
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-undef */
 import React, {useContext, useEffect, useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -16,28 +13,18 @@ import firestore from '@react-native-firebase/firestore';
 import {View, Image, Text} from 'react-native';
 
 const PostCard = ({item, onDelete, onPress, onComment}) => {
-  const {user, logout} = useContext(AuthContext);
+  const {user} = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
+  const [like, setLike] = useState(
+    item.likes.some((i) => i.userID.includes(user.uid)),
+  );
+  // const [likes, setLikes] = useState(item.likes.length);
+  const likeIcon = like ? 'heart' : 'heart-outline';
+  const likeIconColor = like ? '#2e64e5' : '#333';
 
-  likeIcon = item.liked ? 'heart' : 'heart-outline';
-  likeIconColor = item.liked ? '#2e64e5' : '#333';
-
-  if (item.likes === 1) {
-    likeText = '1 Like';
-  } else if (item.likes > 1) {
-    likeText = item.likes + ' Likes';
-  } else {
-    likeText = 'Like';
-  }
-
-  if (item.comments === 1) {
-    commentText = '1 Comment';
-  } else if (item.comments > 1) {
-    commentText = item.comments + ' Comments';
-  } else {
-    commentText = 'Comment';
-  }
-
+  useEffect(() => {
+    getUser();
+  }, []);
   const getUser = async () => {
     await firestore()
       .collection('users')
@@ -45,15 +32,19 @@ const PostCard = ({item, onDelete, onPress, onComment}) => {
       .get()
       .then((documentSnapshot) => {
         if (documentSnapshot.exists) {
-          console.log('User Data', documentSnapshot.data());
           setUserData(documentSnapshot.data());
         }
       });
   };
 
-  useEffect(() => {
-    getUser();
-  }, []);
+  console.log(
+    'liked',
+    item.likes.some((i) => i.userID.includes(user.uid)),
+  );
+
+  const onLike = () => {
+    setLike(!like);
+  };
 
   return (
     <View style={styles.Container} key={item.id}>
@@ -96,19 +87,20 @@ const PostCard = ({item, onDelete, onPress, onComment}) => {
           style={[
             styles.Interaction,
             {backgroundColor: item.liked ? '#2e64e515' : 'transparent'},
-          ]}>
+          ]}
+          onPress={onLike}>
           <Ionicons name={likeIcon} size={25} color={likeIconColor} />
           <Text
             style={[
               styles.InteractionText,
-              {color: item.liked ? '#2e64e5' : '#333'},
+              {color: like ? '#2e64e5' : '#333'},
             ]}>
-            {likeText}
+            {item.likes.length}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.Interaction} onPress={onComment}>
           <Ionicons name="md-chatbubble-outline" size={25} />
-          <Text style={styles.InteractionText}>{commentText}</Text>
+          <Text style={styles.InteractionText}>comment</Text>
         </TouchableOpacity>
         {user.uid === item.userId ? (
           <TouchableOpacity

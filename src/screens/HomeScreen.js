@@ -54,14 +54,11 @@ const HomeScreen = ({navigation}) => {
             });
           });
         });
-
       setPosts(list);
 
       if (loading) {
         setLoading(false);
       }
-
-      console.log('Posts: ', posts);
     } catch (e) {
       console.log(e);
     }

@@ -18,7 +18,7 @@ import firebase from '@react-native-firebase/app';
 
 let list = [];
 const CommentScreen = ({navigation, route}) => {
-  const {user, setUser} = useContext(AuthContext);
+  const {user} = useContext(AuthContext);
   const [comment, setComment] = useState('');
   const [arrayComment, setArrayComment] = useState(null);
   const [me, setMe] = useState(null);
@@ -35,7 +35,7 @@ const CommentScreen = ({navigation, route}) => {
   const getUser = async () => {
     try {
       const test = await firestore().collection('users').doc(user.uid).get();
-      //   console.log('user', test._data);
+      console.log('user', test._data);
       setMe(test._data);
     } catch (error) {
       console.log('error', error);
