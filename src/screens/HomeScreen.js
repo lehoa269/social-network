@@ -55,7 +55,7 @@ const HomeScreen = ({navigation}) => {
           });
         });
       setPosts(list);
-
+      console.log('list', list);
       if (loading) {
         setLoading(false);
       }

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-shadow */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useContext, useEffect, useState} from 'react';
@@ -18,13 +20,14 @@ const PostCard = ({item, onDelete, onPress, onComment}) => {
   const [like, setLike] = useState(
     item.likes.some((i) => i.userID.includes(user.uid)),
   );
-  // const [likes, setLikes] = useState(item.likes.length);
+  const [likes, setLikes] = useState(item.likes);
+  const [likeLegth, setLikeLegth] = useState(item.likes.length);
   const likeIcon = like ? 'heart' : 'heart-outline';
   const likeIconColor = like ? '#2e64e5' : '#333';
-
   useEffect(() => {
     getUser();
   }, []);
+  console.log(item.likes);
   const getUser = async () => {
     await firestore()
       .collection('users')
@@ -37,13 +40,35 @@ const PostCard = ({item, onDelete, onPress, onComment}) => {
       });
   };
 
-  console.log(
-    'liked',
-    item.likes.some((i) => i.userID.includes(user.uid)),
-  );
+  const liked = async (arr) => {
+    try {
+      await firestore()
+        .collection('posts')
+        .doc(item.id)
+        .set({likes: arr}, {merge: true});
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const onLike = () => {
-    setLike(!like);
+    const listLike = likes;
+    if (like) {
+      setLike(false);
+      setLikeLegth(likeLegth - 1);
+      const removeIndex = listLike.findIndex(
+        (item) => item.userID === user.uid,
+      );
+      listLike.splice(removeIndex, 1);
+      setLikes(listLike);
+      liked(listLike);
+    } else {
+      setLike(true);
+      setLikeLegth(likeLegth + 1);
+      listLike.push({userID: user.uid});
+      setLikes(listLike);
+      liked(listLike);
+    }
   };
 
   return (
@@ -95,7 +120,7 @@ const PostCard = ({item, onDelete, onPress, onComment}) => {
               styles.InteractionText,
               {color: like ? '#2e64e5' : '#333'},
             ]}>
-            {item.likes.length}
+            {likeLegth}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.Interaction} onPress={onComment}>
